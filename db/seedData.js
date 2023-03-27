@@ -4,6 +4,8 @@ const {
   createActivity,
   createRoutine,
   addActivityToRoutine,
+  getRoutinesWithoutActivities,
+  getAllActivities
 } = require("./index.js");
 const client = require("./client");
 
@@ -12,7 +14,11 @@ async function dropTables() {
     console.log("Dropping All Tables...");
     // drop all tables, in the correct order
     await client.query(`
-      DROP TABLE IF EXISTS users, activities, routines, routine_activities
+      DROP TABLE IF EXISTS routine_activities;
+      DROP TABLE IF EXISTS routines;
+      DROP TABLE IF EXISTS activities;
+      DROP TABLE IF EXISTS users;
+     
     `);
     console.log("Finishing dropping all tables");
   } catch (error) {
@@ -47,10 +53,11 @@ async function createTables() {
 
       CREATE TABLE routine_activities (
           id SERIAL PRIMARY KEY,
-          "routineId" INTEGER REFERENCES routines(id) UNIQUE,
-          "activityId" INTEGER REFERENCES activities(id) UNIQUE,
+          "routineId" INTEGER REFERENCES routines(id),
+          "activityId" INTEGER REFERENCES activities(id),
           duration INTEGER,
-          count INTEGER
+          count INTEGER,
+          UNIQUE ("routineId", "activityId")
         )
 
 

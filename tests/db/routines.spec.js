@@ -117,7 +117,7 @@ describe("DB Routines", () => {
      and write the addActivityToRoutine function.****/
 
   describe("createRoutine", () => {
-    xit("Creates and returns the new routine", async () => {
+    it("Creates and returns the new routine", async () => {
       const user = await createFakeUser();
       const routine = await createRoutine({
         creatorId: user.id,
@@ -125,6 +125,7 @@ describe("DB Routines", () => {
         name: faker.random.uuid(),
         goal: faker.random.uuid(),
       });
+       
       expect(routine).toEqual(
         objectContaining({
           id: expect.any(Number),
