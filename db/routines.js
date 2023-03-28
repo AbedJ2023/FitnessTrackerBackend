@@ -128,7 +128,7 @@ async function getPublicRoutinesByActivity({ id }) {
 async function updateRoutine({ id, ...fields }) {
   const setString = Object.keys(fields)
     .map((key, index) => {
-      return `${key} = $${index + 1}`;
+      return `"${key}" = $${index + 1}`;
     })
     .join(", ");
   if (setString.length === 0) {
