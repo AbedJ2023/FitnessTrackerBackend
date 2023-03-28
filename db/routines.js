@@ -14,7 +14,6 @@ async function createRoutine({ creatorId, isPublic, name, goal }) {
     `,
       [creatorId, isPublic, name, goal]
     );
-    console.log(routine);
     return routine;
   } catch (error) {
     console.error(error);
@@ -83,13 +82,75 @@ async function getAllPublicRoutines() {
   }
 }
 
-async function getAllRoutinesByUser({ username }) {}
+async function getAllRoutinesByUser({ username }) {
+  try {
+    const { rows: routines } = await client.query(`
+      SELECT routines.*, users.username AS "creatorName"
+      FROM routines
+      JOIN users ON routines."creatorId" = users.id
+      WHERE username = '${username}'
+    `);
+    return attachActivitiesToRoutines(routines);
+  } catch (error) {
+    console.error(error);
+  }
+}
 
-async function getPublicRoutinesByUser({ username }) {}
+async function getPublicRoutinesByUser({ username }) {
+  try {
+    const { rows: routines } = await client.query(`
+      SELECT routines.*, users.username AS "creatorName"
+      FROM routines
+      JOIN users ON routines."creatorId" = users.id
+      WHERE username = '${username}' AND "isPublic" = true
+    `);
+    return attachActivitiesToRoutines(routines);
+  } catch (error) {
+    console.error(error);
+  }
+}
 
-async function getPublicRoutinesByActivity({ id }) {}
+async function getPublicRoutinesByActivity({ id }) {
+  try {
+    const { rows: routines } = await client.query(`
+      SELECT routines.*, users.username AS "creatorName"
+      FROM routines
+      JOIN users ON routines."creatorId" = users.id
+      JOIN routine_activities ON routines.id = routine_activities."routineId"
+      WHERE "activityId" = '${id}' AND "isPublic" = true
+    `);
+    return attachActivitiesToRoutines(routines);
+  } catch (error) {
+    console.error(error);
+  }
+}
 
-async function updateRoutine({ id, ...fields }) {}
+async function updateRoutine({ id, ...fields }) {
+  const setString = Object.keys(fields)
+    .map((key, index) => {
+      return `${key} = $${index + 1}`;
+    })
+    .join(", ");
+  if (setString.length === 0) {
+    return;
+  }
+  try {
+    const {
+      rows: [routine],
+    } = await client.query(
+      `
+      UPDATE routines
+      SET ${setString}
+      WHERE id=${id}
+      RETURNING *
+    `,
+      Object.values(fields)
+    );
+    return routine;
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 async function destroyRoutine(id) {}
 
