@@ -71,7 +71,29 @@ async function getActivityByName(name) {
 }
 
 // used as a helper inside db/routines.js
-async function attachActivitiesToRoutines(routines) {}
+async function attachActivitiesToRoutines(routines) {
+  const routinesToReturn = [...routines];
+
+  try {
+    const { rows: activities } = await client.query(`
+    SELECT activities.*, routine_activities.id AS "routineActivityId", routine_activities."routineId", routine_activities.duration, routine_activities.count
+    FROM activities
+    JOIN routine_activities ON routine_activities."activityId" = activities.id
+    `);
+
+    for (const routine of routinesToReturn) {
+      const activitiesToAdd = activities.filter(
+        (activity) => activity.routineId === routine.id
+      );
+
+      routine.activities = activitiesToAdd;
+    }
+
+    return routinesToReturn;
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 async function updateActivity({ id, ...fields }) {
   // don't try to update the id
