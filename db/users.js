@@ -14,11 +14,11 @@ async function createUser({ username, password }) {
       `
       INSERT INTO users(username, password)
       VALUES($1, $2)
-      RETURNING *
+      ON CONFLICT(username) DO NOTHING
+      RETURNING id, username
     `,
       [username, hashedPassword]
     );
-    delete user.password;
 
     return user;
   } catch (error) {
