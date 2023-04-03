@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-catch */
 const client = require("./client");
 
 // database functions
@@ -18,7 +19,7 @@ async function createActivity({ name, description }) {
 
     return activity;
   } catch (error) {
-    console.error(error);
+    throw error;
   }
 }
 
@@ -31,7 +32,7 @@ async function getAllActivities() {
     `);
     return rows;
   } catch (error) {
-    console.error(error);
+    throw error;
   }
 }
 
@@ -49,7 +50,7 @@ async function getActivityById(id) {
     );
     return activity;
   } catch (error) {
-    console.error(error);
+    throw error;
   }
 }
 
@@ -67,7 +68,7 @@ async function getActivityByName(name) {
     );
     return activity;
   } catch (error) {
-    console.error(error);
+    throw error;
   }
 }
 
@@ -92,7 +93,7 @@ async function attachActivitiesToRoutines(routines) {
 
     return routinesToReturn;
   } catch (error) {
-    console.error(error);
+    throw error;
   }
 }
 
@@ -122,7 +123,7 @@ async function updateActivity({ id, ...fields }) {
     );
     return activity;
   } catch (error) {
-    console.error(error);
+    throw error;
   }
 }
 

@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-catch */
 const client = require("./client");
 
 async function addActivityToRoutine({
@@ -38,7 +39,7 @@ async function getRoutineActivityById(id) {
     );
     return routine_activity;
   } catch (error) {
-    console.log(error);
+    throw error;
   }
 }
 

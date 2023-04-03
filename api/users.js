@@ -97,7 +97,6 @@ router.post("/login", async (req, res, next) => {
 
 router.get("/me", requireUser, async (req, res, next) => {
   try {
-    console.log("HERE: ");
     res.send(req.user);
   } catch (error) {
     next(error);
