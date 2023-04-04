@@ -3,14 +3,12 @@ const {
   getAllActivities,
   createActivity,
   updateActivity,
-  getActivityByName,
   getActivityById,
+  getPublicRoutinesByActivity,
 } = require("../db");
 const { ActivityNotFoundError } = require("../errors");
 const { requireUser } = require("./Utils");
 const router = express.Router();
-
-// GET /api/activities/:activityId/routines
 
 // GET /api/activities
 router.get("/", async (req, res, next) => {
@@ -58,6 +56,22 @@ router.patch("/:activityId", async (req, res, next) => {
       name: "NameIsExists",
       message: `An activity with name ${name} already exists`,
     });
+  }
+});
+
+// GET /api/activities/:activityId/routines
+router.get("/:activityId/routines", async (req, res, next) => {
+  const id = req.params.activityId;
+  try {
+    const checkActivity = await getActivityById(id);
+    if (checkActivity) {
+      const routines = await getPublicRoutinesByActivity({ id });
+      res.send(routines);
+    } else {
+      next({ name: "ActivityIdError", message: ActivityNotFoundError(id) });
+    }
+  } catch (error) {
+    next(error);
   }
 });
 
