@@ -7,10 +7,12 @@ const {
   destroyRoutine,
   getRoutineActivitiesByRoutine,
   destroyRoutineActivity,
+  addActivityToRoutine,
 } = require("../db");
 const {
   UnauthorizedUpdateError,
   UnauthorizedDeleteError,
+  DuplicateRoutineActivityError,
 } = require("../errors");
 const { requireUser } = require("./Utils");
 const router = express.Router();
@@ -121,5 +123,28 @@ router.delete("/:routineId", requireUser, async (req, res, next) => {
 });
 
 // POST /api/routines/:routineId/activities
+
+router.post("/:routineId/activities", requireUser, async (req, res, next) => {
+  const routineId = req.params.routineId;
+  const { activityId, count, duration } = req.body;
+  try {
+    const routineActivity = await addActivityToRoutine({
+      routineId,
+      activityId,
+      count,
+      duration,
+    });
+    if (routineActivity) {
+      res.send(routineActivity);
+    } else {
+      next({
+        name: "creationError",
+        message: DuplicateRoutineActivityError(routineId, activityId),
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+});
 
 module.exports = router;
