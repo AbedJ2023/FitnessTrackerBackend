@@ -5,8 +5,6 @@ const {
   getRoutineById,
   updateRoutine,
   destroyRoutine,
-  getRoutineActivitiesByRoutine,
-  destroyRoutineActivity,
   addActivityToRoutine,
 } = require("../db");
 const {
@@ -100,7 +98,6 @@ router.delete("/:routineId", requireUser, async (req, res, next) => {
   const id = req.user.id;
   try {
     const checkRoutineId = await getRoutineById(routineId);
-    console.log("ROUTINE", checkRoutineId);
 
     if (checkRoutineId) {
       if (checkRoutineId.creatorId !== id) {
